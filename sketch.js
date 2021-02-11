@@ -1,3 +1,6 @@
+// To do:
+// - is there a better way to generalize which tiles to switch, that stays independent of the axis-chosen-to-subdivide algorithm
+
 class Square {
     constructor(A, B, C, D) {
         function check(a) { return Array.isArray(a) && a.length == 2; }
@@ -19,8 +22,8 @@ class Square {
 let clampx = 0.1, clampy = 0.99; // the clamp for subdivision interpolation
 let squares = [];
 let can;
-let canw = 600;
-let canh = 600;
+let canw = 1200;
+let canh = 720;
 let base;
 function setup() {
     can = createCanvas(canw, canh);
@@ -34,15 +37,22 @@ function setup() {
     frameRate(1)
 }
 
-let k = 0;
+let k = 1;
 function draw() {
-    k++;
+    background("white")
+    k++
+    let d = sqrt(k)
     drawSquare(base, color(255, 0, 0))
 
     let n = squares.length;
     for(let c = 0, i = 0; c < n; c++) {
-        print("in")
-        drawSquare(squares[i], color(random(255), random(255), random(255)), i);
+        // print(squares[i].AB() * squares[i].BC())
+        let col = color(
+            map(squares[i].A[1], 0, 600, 255, 0),
+            map(squares[i].AB(), 0, canh, 255, 0),
+            map(squares[i].A[0], 0, 600, 255, 80)
+        );
+        drawSquare(squares[i], col, i);
         subdivide(squares[i], squares, i);
         i+=2;
     }
@@ -97,7 +107,9 @@ function subdivide(s, s_arr, s_index) {
 function drawSquare(s, color) {
     beginShape();
     fill(color)
-    noStroke();
+    // stroke("white")
+    // strokeWeight(0.5)
+    noStroke()
     vertex(s.A[0],s.A[1])
     vertex(s.B[0],s.B[1])
     vertex(s.C[0],s.C[1])
